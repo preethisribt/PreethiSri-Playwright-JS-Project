@@ -1,7 +1,11 @@
+import { test, expect } from '@playwright/test';
+const path = require("path");
+
 exports.LoginPage = class LoginPage {
 
-    constructor(page) {
+    constructor(page, testInfo) {
         this.page = page;
+        this.testInfo = testInfo;
         this.login = page.locator('a', { hasText: 'Log in' });
         this.userNameInput = page.locator('#loginusername');
         this.passwordInput = page.locator('#loginpassword');
@@ -22,6 +26,8 @@ exports.LoginPage = class LoginPage {
         await this.userNameInput.fill(process.env.DemoBlaze_UserName);
         await this.passwordInput.fill(process.env.DemoBlaze_Password);
         await this.loginButton.click();
+        // await this.page.screenshot({ path: 'test-screenshots/' + Date.now() + ' DemoBlazeLoginApplication.png' });
+        await this.testInfo.attach('DemoBlazeLogin', { body: await this.page.screenshot(), contentType: 'image/png' });
         // await this.page.waitForSelector("[href='prod.html?idp_=1']");
     }
 }

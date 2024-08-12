@@ -4,11 +4,12 @@ import { HomPage } from '../Pages/HomePage';
 import { CartPage } from '../Pages/CartPage';
 import { Categories } from '../Pages/CategoriesPage';
 
-test('Add Product To cart', async ({ page }) => {
-    const loginPage = await new LoginPage(page);
+test('Add Product To cart', async ({ page },testInfo)=> {
+    const loginPage = await new LoginPage(page,testInfo);
 
     await page.goto("https://demoblaze.com/index.html");
     await loginPage.loginApplication();
+
 
     const categories = await new Categories(page);
     await categories.selectCategory('Laptops');
