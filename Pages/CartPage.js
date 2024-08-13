@@ -2,14 +2,14 @@ const { expect } = require("@playwright/test");
 const { setTimeout } = require("timers/promises");
 
 exports.CartPage = class CartPage {
-    constructor(page) {
+    constructor(page, testInfo) {
         this.delete = "//a[text()='Delete']";
         this.page = page;
+        this.testInfo = testInfo;
         this.cart = page.locator("#cartur");
         this.cartBody = page.locator("//tbody[@id='tbodyid']//img[@src]");
         this.pageText = page.getByText("Products");
         this.cartProducts = page.locator("#tbodyid td");
-        // this.delete = page.getByRole('link', { name: 'Delete' });
         this.deleteButton = page.locator(this.delete);
     }
 
@@ -18,10 +18,10 @@ exports.CartPage = class CartPage {
         await console.log(`delete count size is ${count}`);
 
         for (let del = 1; await del <= count; del++) {
-            // await this.page.pause();
             await this.deleteButton.first().click();
             await this.page.waitForEvent("load");
         }
+        await this.testInfo.attach("CartPageAfterRemovingProducts", { body: await this.page.screenshot(), contentType: 'image/png' });
     }
 
     async selectCart() {
@@ -40,5 +40,6 @@ exports.CartPage = class CartPage {
             }
         }
         await expect(flag).toBeTruthy();
+        await this.testInfo.attach("CartPage", { body: await this.page.screenshot(), contentType: 'image/png' });
     }
 }

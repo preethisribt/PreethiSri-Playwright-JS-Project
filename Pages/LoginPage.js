@@ -17,7 +17,6 @@ exports.LoginPage = class LoginPage {
     }
 
     async closeBrowser() {
-        // await this.page.pause();
         await this.page.close();
     }
 
@@ -28,6 +27,5 @@ exports.LoginPage = class LoginPage {
         await this.loginButton.click();
         // await this.page.screenshot({ path: 'test-screenshots/' + Date.now() + ' DemoBlazeLoginApplication.png' });
         await this.testInfo.attach('DemoBlazeLogin', { body: await this.page.screenshot(), contentType: 'image/png' });
-        // await this.page.waitForSelector("[href='prod.html?idp_=1']");
     }
 }
