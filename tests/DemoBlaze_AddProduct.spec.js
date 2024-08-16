@@ -16,10 +16,8 @@ test('Add any two laptop and check whether the selected product appears in the c
 
     const cartPage = await new CartPage(page, testInfo);
     await cartPage.selectCart();
-    for (let i = 0; i < jsonData.ProductToBeSelected.length; i++) {
-        await cartPage.validateProductInCart(jsonData.Product[i]);
+    await cartPage.validateProductInCart();
 
-    }
     await page.close();
 });
 

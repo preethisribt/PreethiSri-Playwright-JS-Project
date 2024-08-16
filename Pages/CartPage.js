@@ -1,5 +1,6 @@
-const { expect } = require("@playwright/test");
+const { expect, test } = require("@playwright/test");
 const { setTimeout } = require("timers/promises");
+const jsonData = JSON.parse(JSON.stringify(require("../test-data/DemoBlaze_Data.json")));
 
 exports.CartPage = class CartPage {
     constructor(page, testInfo) {
@@ -25,21 +26,18 @@ exports.CartPage = class CartPage {
     }
 
     async selectCart() {
-        await console.log("inside select cart");
-        await this.cart.click();
-        await this.page.waitForSelector("//tbody[@id='tbodyid']//img[@src]");
-        expect(await this.cartBody.count()).toBeGreaterThan(0);
+        await Promise.all([
+            this.cart.click(),
+            this.page.waitForEvent('load'),
+            this.page.waitForSelector("//tbody[@id='tbodyid']//img[@src]")
+        ]);
+        await this.testInfo.attach('CartPage', { body: await this.page.screenshot(), contentType: 'image/png' });
+        await expect(await this.cartBody.count()).toBeGreaterThan(0)
     }
 
-    async validateProductInCart(product) {
-        let flag = false;
-        for (const cartProduct of await this.cartProducts.all()) {
-            await console.log("Received cartProduct.textContent() " + await cartProduct.textContent());
-            if ((await cartProduct.textContent()) === product) {
-                flag = true;
-            }
+    async validateProductInCart() {
+        for (let product of await jsonData.ProductToBeSelected) {
+            await expect(await this.page.getByRole('cell', { name: product })).toBeVisible();
         }
-        await expect(flag).toBeTruthy();
-        await this.testInfo.attach("CartPage", { body: await this.page.screenshot(), contentType: 'image/png' });
     }
 }

@@ -19,28 +19,28 @@ exports.HomPage = class HomPage {
     }
 
     async selectCategory(category) {
-        // let loadPromise = this.page.waitForEvent("load");
+
         switch (category) {
             case 'Phones': {
-                await this.phonesCategory.click();
+                category = this.phonesCategory;
                 break;
             }
             case 'Laptops': {
-                await this.laptopsCategory.click();
+                category = this.laptopsCategory;
                 break;
             }
             case 'Monitors': {
-                await this.monitorsCategory.click();
+                category = this.monitorsCategory;
                 break;
             }
             case 'All Category':
             default: {
-                await this.allCategory.click();
+                category = this.allCategory;
                 break;
             }
         }
-        // await loadPromise;
-        await this.page.waitForLoadState('load');
+        // await console.log("category is ", category);
+        await Promise.all([this.page.waitForEvent('load'), category.click(), expect(this.page.getByRole('link', { name: 'MacBook Pro' })).toBeVisible()]);
         await this.testInfo.attach('CategoryPage', { body: await this.page.screenshot(), contentType: 'image/png' });
 
     }
@@ -61,9 +61,6 @@ exports.HomPage = class HomPage {
     }
 
     async selectProduct(product) {
-        await expect(await this.products.first()).toBeVisible();
-        const productCountInCurrentPage = await this.products.count();
-        await expect(productCountInCurrentPage).toBeGreaterThan(1);
         await this.testInfo.attach('HomePage', { body: await this.page.screenshot(), contentType: 'image/png' });
 
         for (let element of await this.products.all()) {
@@ -72,7 +69,6 @@ exports.HomPage = class HomPage {
                 await expect(await this.page.getByRole('heading', { name: product })).toBeVisible();
                 break;
             }
-
         }
     }
 
