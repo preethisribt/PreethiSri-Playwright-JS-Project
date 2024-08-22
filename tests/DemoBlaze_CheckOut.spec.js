@@ -2,10 +2,10 @@ import { test, expect } from '@playwright/test';
 import { LoginPage } from '../Pages/LoginPage';
 import { HomPage } from '../Pages/HomePage';
 import { CartPage } from '../Pages/CartPage';
+import { OrderPage } from '../Pages/OrderPage'
 
-test('complete pruchase of monitor', async ({ page }) => {
+test('complete pruchase', async ({ page }, testInfo) => {
     const loginPage = await new LoginPage(page, testInfo);
-
     await loginPage.launchApplication(process.env.DemoBlaze_URL);
     await loginPage.loginApplication();
 
@@ -14,9 +14,13 @@ test('complete pruchase of monitor', async ({ page }) => {
 
     const cartPage = await new CartPage(page, testInfo);
     await cartPage.selectCart();
-    for (let i = 0; i < jsonData.ProductToBeSelected.length; i++) {
-        await cartPage.validateProductInCart(jsonData.Product[i]);
+    await cartPage.validateProductInCart();
+    const totalAmountInCart = await cartPage.placeOrderAndGetCartAmount();
+    await console.log("totalAmountInCart ", totalAmountInCart);
 
-    }
+    const orderPage = await new OrderPage();
+    await orderPage.provideCheckoutDetails();
+
+    //await cartPage.deleteAllItemFromCart();
     await page.close();
 });

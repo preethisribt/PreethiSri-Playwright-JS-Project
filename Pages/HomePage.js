@@ -7,7 +7,7 @@ exports.HomPage = class HomPage {
     constructor(page, testInfo) {
         this.page = page;
         this.testInfo = testInfo;
-        this.products = page.locator("#tbodyid h4").getByRole('link');
+        this.products = page.locator("#tbodyid h4 a");
         // this.products = page.locator("//h4[@class='card-title']//a");
         this.addCart = page.getByRole('link', { name: 'Add to cart' });
         this.home = page.getByRole('link', { name: 'Home' });
@@ -19,14 +19,15 @@ exports.HomPage = class HomPage {
     }
 
     async selectCategory(category) {
-
+        let categoryPromise = this.page.waitForEvent('load');
         switch (category) {
             case 'Phones': {
                 category = this.phonesCategory;
                 break;
             }
             case 'Laptops': {
-                category = this.laptopsCategory;
+                this.laptopsCategory.click();
+                // category = this.laptopsCategory;
                 break;
             }
             case 'Monitors': {
@@ -39,8 +40,9 @@ exports.HomPage = class HomPage {
                 break;
             }
         }
-        // await console.log("category is ", category);
-        await Promise.all([this.page.waitForEvent('load'), category.click(), expect(this.page.getByRole('link', { name: 'MacBook Pro' })).toBeVisible()]);
+
+        await Promise.all([categoryPromise, expect(this.page.getByRole('link', { name: 'MacBook Pro' })).toBeVisible()]);
+
         await this.testInfo.attach('CategoryPage', { body: await this.page.screenshot(), contentType: 'image/png' });
 
     }
@@ -70,6 +72,7 @@ exports.HomPage = class HomPage {
                 break;
             }
         }
+        await this.page.pause();
     }
 
     async selectMoreProducts() {
@@ -77,6 +80,7 @@ exports.HomPage = class HomPage {
 
         for (let i = 0; i < totalProductRequired; i++) {
             await this.selectCategory(await jsonData.Categories);
+            await console.log("jsonData.ProductToBeSelected[i] = ", await jsonData.ProductToBeSelected[i]);
             await this.selectProduct(await jsonData.ProductToBeSelected[i]);
             await this.addToProduct();
             await this.home.click();

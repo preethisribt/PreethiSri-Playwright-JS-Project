@@ -18,6 +18,7 @@ test('Add any two laptop and check whether the selected product appears in the c
     await cartPage.selectCart();
     await cartPage.validateProductInCart();
 
+
     await page.close();
 });
 

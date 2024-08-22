@@ -1,4 +1,10 @@
 {
-    "Categories":"Laptops",
-    "ProductToBeSelected":["Dell i7 8gb","MacBook Pro"]
+    "Categories": "Laptops",
+    "ProductToBeSelected": ["Dell i7 8gb","MacBook Pro"],
+    "Name": "Test user1",
+    "Country": "Australia",
+    "City": "Melbourne",
+    "CC_Card": "1234 5678 9012",
+    "CC_Month": 12,
+    "CC_Year": 2026
 }

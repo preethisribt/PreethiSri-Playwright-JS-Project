@@ -12,6 +12,17 @@ exports.CartPage = class CartPage {
         this.pageText = page.getByText("Products");
         this.cartProducts = page.locator("#tbodyid td");
         this.deleteButton = page.locator(this.delete);
+        this.placeOrderButton = page.getByRole('button', { name: 'Place Order' });
+        this.cartTotalAmount = page.locator('#totalp');
+        let totalAmountInCart;
+    }
+
+
+    async placeOrderAndGetCartAmount() {
+        this.totalAmountInCart = await this.cartTotalAmount.textContent();
+        await this.testInfo.attach("PlaceOrderPage", { body: await page.screenshot(), contentType: 'image/png' });
+        await this.placeOrderButton.click();
+        return this.totalAmountInCart;
     }
 
     async deleteAllItemFromCart() {
