@@ -1,10 +1,12 @@
 import { expect } from '@playwright/test';
 import json from '../test-data/DemoBlaze_Data.json';
 import { CartPage } from './CartPage';
+// import { CartPage } from './CartPage';
 
 const jsonData = JSON.parse(JSON.stringify(json));
 
 exports.OrderPage = class OrderPage {
+
     constructor(page, testInfo) {
         this.page = page;
         this.testInfo = testInfo;
@@ -23,7 +25,9 @@ exports.OrderPage = class OrderPage {
         await expect(this.page.getByRole('heading', { name: 'Thank you for your purchase!' })).toBeVisible();
         const orderMessage = await this.page.locator("//p[@class='lead text-muted ']").textContent();
         console.log("Order Message = ", await orderMessage);
-        await expect(orderMessage).toContainText(totalAmountInCart);
+
+        const cartPage = await new CartPage();
+        await expect(await orderMessage).toContainText(await cartPage.getCartAmount());
     }
 
     async provideCheckoutDetails() {
@@ -43,11 +47,11 @@ exports.OrderPage = class OrderPage {
     async proceedToPurchase() {
         await this.testInfo.attach("PlaceOrderPage", { body: await this.page.screenshot(), contentType: 'image/png' });
         await this.purchaseButton.click();
-        await this.page.pause();
     }
 
     async validateAmountDuringCheckout() {
         const cartPage = await new CartPage();
-        await expect(cartPage.getCartAmount).toHaveText(this.totalAmountInCheckout.textContent());
+        await this.page.waitForSelector("#totalm");
+        await expect(await cartPage.getCartAmount()).toHaveText(await this.totalAmountInCheckout.textContent());
     }
 }

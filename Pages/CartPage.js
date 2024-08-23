@@ -1,14 +1,11 @@
-const { expect, test } = require("@playwright/test");
-const { setTimeout } = require("timers/promises");
+import { expect } from '@playwright/test';
 const jsonData = JSON.parse(JSON.stringify(require("../test-data/DemoBlaze_Data.json")));
 
 exports.CartPage = class CartPage {
-    totalAmountInCart;
-
     constructor(page, testInfo) {
-        this.delete = "//a[text()='Delete']";
         this.page = page;
         this.testInfo = testInfo;
+        this.delete = "//a[text()='Delete']";
         this.cart = page.locator("#cartur");
         this.cartBody = page.locator("//tbody[@id='tbodyid']//img[@src]");
         this.pageText = page.getByText("Products");
@@ -21,10 +18,12 @@ exports.CartPage = class CartPage {
     async placeOrder() {
         await this.testInfo.attach("PlaceOrderPage", { body: await this.page.screenshot(), contentType: 'image/png' });
         await this.placeOrderButton.click();
+        await this.page.waitForSelector("#name");
+        await this.testInfo.attach("OrderPage", { body: await this.page.screenshot(), contentType: 'image/png' });
     }
 
     async getCartAmount() {
-        return this.totalAmountInCart = await this.cartTotalAmount.textContent();
+        return await this.cartTotalAmount.textContent();
     }
 
     async deleteAllItemFromCart() {
@@ -39,15 +38,14 @@ exports.CartPage = class CartPage {
     }
 
     async selectCart() {
+        await this.page.pause();
+
         await Promise.all([
             this.cart.click(),
             this.page.waitForEvent('load'),
             this.page.waitForSelector("//tbody[@id='tbodyid']//img[@src]")
         ]);
-        // await this.page.pause();
-        // getByRole('row', { name: 'Dell i7 8gb 700 Delete' }).getByRole('img')
         await this.testInfo.attach('CartPage', { body: await this.page.screenshot(), contentType: 'image/png' });
-        await expect(await this.cartBody.count()).toBeGreaterThan(0)
     }
 
     async validateProductInCart() {
