@@ -1,4 +1,7 @@
+import { expect } from '@playwright/test';
 import json from '../test-data/DemoBlaze_Data.json';
+import { CartPage } from './CartPage';
+
 const jsonData = JSON.parse(JSON.stringify(json));
 
 exports.OrderPage = class OrderPage {
@@ -15,13 +18,20 @@ exports.OrderPage = class OrderPage {
         this.purchaseButton = page.getByRole('button', { name: 'Purchase' });
     }
 
+    async validationSuccessfullOrderMessage() {
+        await this.testInfo.attach("OrderPage", { body: await this.page.screenshot(), contentType: 'image/png' });
+        await expect(this.page.getByRole('heading', { name: 'Thank you for your purchase!' })).toBeVisible();
+        const orderMessage = await this.page.locator("//p[@class='lead text-muted ']").textContent();
+        console.log("Order Message = ", await orderMessage);
+        await expect(orderMessage).toContainText(totalAmountInCart);
+    }
+
     async provideCheckoutDetails() {
         await this.name.fill(jsonData.Name);
         await this.country.fill(jsonData.Country);
         await this.city.fill(jsonData.City);
         await this.provideCardDetails();
-        await this.purchase();
-
+        await this.proceedToPurchase();
     }
 
     async provideCardDetails() {
@@ -30,9 +40,14 @@ exports.OrderPage = class OrderPage {
         await this.year.fill(jsonData.CC_Year);
     }
 
-    async purchase() {
+    async proceedToPurchase() {
         await this.testInfo.attach("PlaceOrderPage", { body: await this.page.screenshot(), contentType: 'image/png' });
         await this.purchaseButton.click();
         await this.page.pause();
+    }
+
+    async validateAmountDuringCheckout() {
+        const cartPage = await new CartPage();
+        await expect(cartPage.getCartAmount).toHaveText(this.totalAmountInCheckout.textContent());
     }
 }

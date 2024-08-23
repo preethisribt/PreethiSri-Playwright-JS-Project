@@ -5,6 +5,6 @@
     "Country": "Australia",
     "City": "Melbourne",
     "CC_Card": "1234 5678 9012",
-    "CC_Month": 12,
-    "CC_Year": 2026
+    "CC_Month": "12",
+    "CC_Year": "2026"
 }

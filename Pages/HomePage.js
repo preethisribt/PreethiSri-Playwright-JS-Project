@@ -42,7 +42,6 @@ exports.HomPage = class HomPage {
         }
 
         await Promise.all([categoryPromise, expect(this.page.getByRole('link', { name: 'MacBook Pro' })).toBeVisible()]);
-
         await this.testInfo.attach('CategoryPage', { body: await this.page.screenshot(), contentType: 'image/png' });
 
     }
@@ -64,6 +63,8 @@ exports.HomPage = class HomPage {
 
     async selectProduct(product) {
         await this.testInfo.attach('HomePage', { body: await this.page.screenshot(), contentType: 'image/png' });
+        // console.log("total product available ", await this.page.$$("#tbodyid h4 a").length);
+        // await expect(await this.page.$$("#tbodyid h4 a").length).toBeGreaterThan(0);
 
         for (let element of await this.products.all()) {
             if (await element.textContent() === product) {
@@ -72,7 +73,6 @@ exports.HomPage = class HomPage {
                 break;
             }
         }
-        await this.page.pause();
     }
 
     async selectMoreProducts() {
@@ -80,7 +80,6 @@ exports.HomPage = class HomPage {
 
         for (let i = 0; i < totalProductRequired; i++) {
             await this.selectCategory(await jsonData.Categories);
-            await console.log("jsonData.ProductToBeSelected[i] = ", await jsonData.ProductToBeSelected[i]);
             await this.selectProduct(await jsonData.ProductToBeSelected[i]);
             await this.addToProduct();
             await this.home.click();

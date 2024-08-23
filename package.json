@@ -8,8 +8,8 @@
   "license": "ISC",
   "description": "",
   "devDependencies": {
-    "@playwright/test": "^1.45.3",
-    "@types/node": "^22.1.0"
+    "@playwright/test": "^1.46.1",
+    "@types/node": "^22.5.0"
   },
   "dependencies": {
     "csv-parse": "^5.5.6",

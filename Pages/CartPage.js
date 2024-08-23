@@ -3,6 +3,8 @@ const { setTimeout } = require("timers/promises");
 const jsonData = JSON.parse(JSON.stringify(require("../test-data/DemoBlaze_Data.json")));
 
 exports.CartPage = class CartPage {
+    totalAmountInCart;
+
     constructor(page, testInfo) {
         this.delete = "//a[text()='Delete']";
         this.page = page;
@@ -14,15 +16,15 @@ exports.CartPage = class CartPage {
         this.deleteButton = page.locator(this.delete);
         this.placeOrderButton = page.getByRole('button', { name: 'Place Order' });
         this.cartTotalAmount = page.locator('#totalp');
-        let totalAmountInCart;
     }
 
-
-    async placeOrderAndGetCartAmount() {
-        this.totalAmountInCart = await this.cartTotalAmount.textContent();
-        await this.testInfo.attach("PlaceOrderPage", { body: await page.screenshot(), contentType: 'image/png' });
+    async placeOrder() {
+        await this.testInfo.attach("PlaceOrderPage", { body: await this.page.screenshot(), contentType: 'image/png' });
         await this.placeOrderButton.click();
-        return this.totalAmountInCart;
+    }
+
+    async getCartAmount() {
+        return this.totalAmountInCart = await this.cartTotalAmount.textContent();
     }
 
     async deleteAllItemFromCart() {
@@ -42,6 +44,8 @@ exports.CartPage = class CartPage {
             this.page.waitForEvent('load'),
             this.page.waitForSelector("//tbody[@id='tbodyid']//img[@src]")
         ]);
+        // await this.page.pause();
+        // getByRole('row', { name: 'Dell i7 8gb 700 Delete' }).getByRole('img')
         await this.testInfo.attach('CartPage', { body: await this.page.screenshot(), contentType: 'image/png' });
         await expect(await this.cartBody.count()).toBeGreaterThan(0)
     }
